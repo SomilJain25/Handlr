@@ -18,12 +18,23 @@ const authResolvers = require('./resolvers/auth');
 const typeDefs = mergeTypeDefs([authTypeDefs]);
 
 const mergeResolvers = (resolverArr) => {
-  const merged = { Query: {}, Mutation: {}}; //, Subscription: {} 
+  const merged = { Query: {}, Mutation: {} };
+  let hasSubscriptions = false;
+
   resolverArr.forEach((r) => {
     Object.assign(merged.Query, r.Query || {});
     Object.assign(merged.Mutation, r.Mutation || {});
-    // Object.assign(merged.Subscription, r.Subscription || {});
+    if (r.Subscription) {
+      merged.Subscription = { ...(merged.Subscription || {}), ...r.Subscription };
+      hasSubscriptions = true;
+    }
   });
+
+  // Only include the Subscription resolver map once a typeDef actually
+  // declares a `type Subscription` (Phase 6+). An empty object here makes
+  // graphql-tools throw "Subscription defined in resolvers, but not in schema".
+  if (!hasSubscriptions) delete merged.Subscription;
+
   return merged;
 };
 
