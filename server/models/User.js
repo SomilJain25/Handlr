@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema(
     refreshTokens: [{ type: String, select: false }], // supports multi-device logout
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
+    emailVerificationToken: { type: String, select: false },
+    emailVerificationExpires: { type: Date, select: false },
 
     // ---- Freelancer-only fields (Phase 3 will expand these) ----
     bio: { type: String, default: '' },
