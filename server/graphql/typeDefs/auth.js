@@ -45,5 +45,11 @@ module.exports = gql`
     login(input: LoginInput!): AuthPayload!
     refreshToken(token: String!): AuthPayload!
     logout: Boolean!
+
+    forgotPassword(email: String!): Boolean!
+    resetPassword(token: String!, newPassword: String!): Boolean!
+
+    resendVerificationEmail: Boolean!
+    verifyEmail(token: String!): Boolean!
   }
 `;
