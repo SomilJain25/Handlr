@@ -5,6 +5,11 @@ const {
   verifyRefreshToken,
 } = require('../../utils/generateTokens');
 const { requireAuth } = require('../../middleware/auth');
+const { createOneTimeToken, hashToken } = require('../../utils/oneTimeToken');
+const {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+} = require('../../services/emailService');
 
 module.exports = {
   Query: {
@@ -26,10 +31,19 @@ module.exports = {
 
       const user = await User.create({ name, email, password, role });
 
+      const { rawToken, hashedToken } = createOneTimeToken();
+      user.emailVerificationToken = hashedToken;
+      user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
+
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
       user.refreshTokens = [refreshToken];
       await user.save();
+
+      // Don't block registration on email delivery issues.
+      sendVerificationEmail(user, rawToken).catch((err) =>
+        console.error('Failed to send verification email:', err.message)
+      );
 
       return { accessToken, refreshToken, user };
     },
@@ -80,6 +94,77 @@ module.exports = {
     logout: async (_, __, context) => {
       const authUser = requireAuth(context);
       await User.findByIdAndUpdate(authUser.id, { refreshTokens: [] });
+      return true;
+    },
+
+    forgotPassword: async (_, { email }) => {
+      const user = await User.findOne({ email: email.toLowerCase() });
+      // Always return true, even if no account exists — prevents email enumeration.
+      if (!user) return true;
+
+      const { rawToken, hashedToken } = createOneTimeToken();
+      user.passwordResetToken = hashedToken;
+      user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+      await user.save();
+
+      sendPasswordResetEmail(user, rawToken).catch((err) =>
+        console.error('Failed to send password reset email:', err.message)
+      );
+
+      return true;
+    },
+
+    resetPassword: async (_, { token, newPassword }) => {
+      const hashed = hashToken(token);
+      const user = await User.findOne({
+        passwordResetToken: hashed,
+        passwordResetExpires: { $gt: Date.now() },
+      }).select('+passwordResetToken +passwordResetExpires +refreshTokens');
+
+      if (!user) {
+        throw new Error('Password reset link is invalid or has expired.');
+      }
+
+      user.password = newPassword; // pre-save hook re-hashes it
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      user.refreshTokens = []; // force re-login on all devices
+      await user.save();
+
+      return true;
+    },
+
+    resendVerificationEmail: async (_, __, context) => {
+      const authUser = requireAuth(context);
+      const user = await User.findById(authUser.id);
+      if (!user) throw new Error('User not found.');
+      if (user.isVerified) return true;
+
+      const { rawToken, hashedToken } = createOneTimeToken();
+      user.emailVerificationToken = hashedToken;
+      user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000;
+      await user.save();
+
+      await sendVerificationEmail(user, rawToken);
+      return true;
+    },
+
+    verifyEmail: async (_, { token }) => {
+      const hashed = hashToken(token);
+      const user = await User.findOne({
+        emailVerificationToken: hashed,
+        emailVerificationExpires: { $gt: Date.now() },
+      }).select('+emailVerificationToken +emailVerificationExpires');
+
+      if (!user) {
+        throw new Error('Verification link is invalid or has expired.');
+      }
+
+      user.isVerified = true;
+      user.emailVerificationToken = undefined;
+      user.emailVerificationExpires = undefined;
+      await user.save();
+
       return true;
     },
   },
