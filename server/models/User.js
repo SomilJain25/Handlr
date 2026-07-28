@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
     hourlyRate: { type: Number },
     availability: {
       type: String,
-      enum: ['full-time', 'part-time', 'not-available'],
+      enum: ['full_time', 'part_time', 'not_available'],
     },
     resumeUrl: { type: String },
     portfolio: [{ title: String, url: String, image: String }],
