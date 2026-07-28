@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { RESEND_VERIFICATION_MUTATION } from '../graphql/auth';
@@ -45,8 +46,15 @@ export default function Dashboard() {
       )}
 
       <p className="mt-8 text-sm text-gray-400">
-        Full dashboard cards & charts (Phase 9) and role-specific tools (Phases 3–8) land here next.
+        Full dashboard cards & charts (Phase 9) and role-specific tools (Phases 4–8) land here next.
       </p>
+
+      <Link
+        to={user?.role === 'freelancer' ? '/profile/freelancer' : '/profile/client'}
+        className="inline-block mt-4 text-sm text-primary-600 hover:underline"
+      >
+        Edit my profile →
+      </Link>
     </div>
   );
 }
