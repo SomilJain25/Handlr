@@ -13,6 +13,7 @@ const connectDB = require('./config/db');
 const { schema } = require('./graphql');
 const { getUserFromReq } = require('./middleware/auth');
 const { initSocket } = require('./socket');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -40,6 +41,9 @@ async function startServer() {
 
   // --- Static file serving for local uploads (falls back before Cloudinary is configured) ---
   app.use('/uploads', express.static('uploads'));
+
+  // --- REST upload routes (Cloudinary) ---
+  app.use('/api/upload', uploadRoutes);
 
   // --- Apollo Server (GraphQL) ---
   const apolloServer = new ApolloServer({ schema });
