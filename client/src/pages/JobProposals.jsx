@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
 import {
@@ -7,6 +7,7 @@ import {
   ACCEPT_PROPOSAL_MUTATION,
   REJECT_PROPOSAL_MUTATION,
 } from '../graphql/proposal';
+import { START_CONVERSATION_MUTATION } from '../graphql/chat';
 
 const STATUS_STYLE = {
   pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
@@ -18,6 +19,7 @@ const STATUS_STYLE = {
 
 export default function JobProposals() {
   const { id: jobId } = useParams();
+  const navigate = useNavigate();
   const { data, loading, refetch } = useQuery(PROPOSALS_FOR_JOB_QUERY, {
     variables: { jobId },
   });
@@ -25,6 +27,18 @@ export default function JobProposals() {
   const [shortlistProposal] = useMutation(SHORTLIST_PROPOSAL_MUTATION);
   const [acceptProposal] = useMutation(ACCEPT_PROPOSAL_MUTATION);
   const [rejectProposal] = useMutation(REJECT_PROPOSAL_MUTATION);
+  const [startConversation] = useMutation(START_CONVERSATION_MUTATION);
+
+  const handleMessage = async (freelancerId) => {
+    try {
+      const { data } = await startConversation({
+        variables: { participantId: freelancerId, jobId },
+      });
+      navigate(`/messages/${data.startConversation.id}`);
+    } catch (err) {
+      toast.error(err.message || 'Could not start conversation');
+    }
+  };
 
   const runAction = async (mutationFn, id, successMsg) => {
     try {
@@ -108,6 +122,12 @@ export default function JobProposals() {
                     Shortlist
                   </button>
                 )}
+                <button
+                  onClick={() => handleMessage(p.freelancer.id)}
+                  className="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  Message
+                </button>
                 <button
                   onClick={() => runAction(acceptProposal, p.id, 'Proposal accepted — job closed')}
                   className="px-3 py-1.5 text-sm rounded-md bg-primary-500 text-white hover:bg-primary-600"
