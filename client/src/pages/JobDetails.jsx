@@ -10,6 +10,7 @@ import {
   REOPEN_JOB_MUTATION,
 } from '../graphql/job';
 import { MY_PROPOSALS_QUERY } from '../graphql/proposal';
+import { START_CONVERSATION_MUTATION } from '../graphql/chat';
 import ProposalModal from '../components/ProposalModal';
 
 export default function JobDetails() {
@@ -22,6 +23,7 @@ export default function JobDetails() {
   const [deleteJob] = useMutation(DELETE_JOB_MUTATION);
   const [closeJob] = useMutation(CLOSE_JOB_MUTATION);
   const [reopenJob] = useMutation(REOPEN_JOB_MUTATION);
+  const [startConversation] = useMutation(START_CONVERSATION_MUTATION);
 
   // Check whether this freelancer already has an active proposal on this job.
   const { data: myProposalsData } = useQuery(MY_PROPOSALS_QUERY, {
@@ -60,6 +62,17 @@ export default function JobDetails() {
       }
     } catch (err) {
       toast.error(err.message || 'Action failed');
+    }
+  };
+
+  const handleMessageClient = async () => {
+    try {
+      const { data } = await startConversation({
+        variables: { participantId: job.client.id, jobId: job.id },
+      });
+      navigate(`/messages/${data.startConversation.id}`);
+    } catch (err) {
+      toast.error(err.message || 'Could not start conversation');
     }
   };
 
@@ -148,6 +161,13 @@ export default function JobDetails() {
       ) : (
         user?.role === 'freelancer' && (
           <>
+            <button
+              onClick={handleMessageClient}
+              className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 mb-3"
+            >
+              Message client
+            </button>
+            <br />
             {existingProposal ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 You already applied to this job — status:{' '}
