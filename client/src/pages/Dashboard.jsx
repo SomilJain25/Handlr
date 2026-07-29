@@ -55,6 +55,10 @@ export default function Dashboard() {
       >
         Edit my profile →
       </Link>
+      <br />
+      <Link to="/jobs" className="inline-block mt-2 text-sm text-primary-600 hover:underline">
+        Browse jobs →
+      </Link>
     </div>
   );
 }
