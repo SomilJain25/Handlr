@@ -8,11 +8,14 @@ import VerifyEmail from '../pages/VerifyEmail';
 import Dashboard from '../pages/Dashboard';
 import FreelancerProfile from '../pages/FreelancerProfile';
 import ClientProfile from '../pages/ClientProfile';
+import Jobs from '../pages/Jobs';
+import JobDetails from '../pages/JobDetails';
+import CreateJob from '../pages/CreateJob';
+import EditJob from '../pages/EditJob';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
 
-// Phase 4+ will add: Jobs, JobDetails, CreateJob, EditJob, Messages,
-// Notifications, Settings, Reviews, About, Contact
+// Phase 5+ will add: Proposals, Messages, Notifications, Settings, Reviews, About, Contact
 
 export default function AppRoutes() {
   return (
@@ -47,6 +50,27 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute roles={['client']}>
             <ClientProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/jobs/:id" element={<JobDetails />} />
+
+      <Route
+        path="/jobs/new"
+        element={
+          <ProtectedRoute roles={['client']}>
+            <CreateJob />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/jobs/:id/edit"
+        element={
+          <ProtectedRoute roles={['client']}>
+            <EditJob />
           </ProtectedRoute>
         }
       />
