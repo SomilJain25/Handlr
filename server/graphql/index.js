@@ -5,7 +5,7 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const authTypeDefs = require('./typeDefs/auth');
 const profileTypeDefs = require('./typeDefs/profile');
 const jobTypeDefs = require('./typeDefs/job');
-// const proposalTypeDefs = require('./typeDefs/proposal'); // Phase 5
+const proposalTypeDefs = require('./typeDefs/proposal');
 // const chatTypeDefs = require('./typeDefs/chat');         // Phase 6
 // const reviewTypeDefs = require('./typeDefs/review');     // Phase 8
 
@@ -13,11 +13,11 @@ const jobTypeDefs = require('./typeDefs/job');
 const authResolvers = require('./resolvers/auth');
 const profileResolvers = require('./resolvers/profile');
 const jobResolvers = require('./resolvers/job');
-// const proposalResolvers = require('./resolvers/proposal');
+const proposalResolvers = require('./resolvers/proposal');
 // const chatResolvers = require('./resolvers/chat');
 // const reviewResolvers = require('./resolvers/review');
 
-const typeDefs = mergeTypeDefs([authTypeDefs, profileTypeDefs, jobTypeDefs]);
+const typeDefs = mergeTypeDefs([authTypeDefs, profileTypeDefs, jobTypeDefs, proposalTypeDefs]);
 
 const mergeResolvers = (resolverArr) => {
   const merged = {};
@@ -37,7 +37,7 @@ const mergeResolvers = (resolverArr) => {
   return merged;
 };
 
-const resolvers = mergeResolvers([authResolvers, profileResolvers, jobResolvers]);
+const resolvers = mergeResolvers([authResolvers, profileResolvers, jobResolvers, proposalResolvers]);
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
