@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
@@ -8,16 +9,24 @@ import {
   CLOSE_JOB_MUTATION,
   REOPEN_JOB_MUTATION,
 } from '../graphql/job';
+import { MY_PROPOSALS_QUERY } from '../graphql/proposal';
+import ProposalModal from '../components/ProposalModal';
 
 export default function JobDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showProposalModal, setShowProposalModal] = useState(false);
 
   const { data, loading, error } = useQuery(JOB_QUERY, { variables: { id } });
   const [deleteJob] = useMutation(DELETE_JOB_MUTATION);
   const [closeJob] = useMutation(CLOSE_JOB_MUTATION);
   const [reopenJob] = useMutation(REOPEN_JOB_MUTATION);
+
+  // Check whether this freelancer already has an active proposal on this job.
+  const { data: myProposalsData } = useQuery(MY_PROPOSALS_QUERY, {
+    skip: user?.role !== 'freelancer',
+  });
 
   if (loading) return <div className="p-10 text-gray-400">Loading job…</div>;
   if (error || !data?.job)
@@ -25,6 +34,9 @@ export default function JobDetails() {
 
   const job = data.job;
   const isOwner = user?.id === job.client.id;
+  const existingProposal = myProposalsData?.myProposals.find(
+    (p) => p.job.id === job.id && ['pending', 'shortlisted', 'accepted'].includes(p.status)
+  );
 
   const handleDelete = async () => {
     if (!confirm('Delete this job posting? This cannot be undone.')) return;
@@ -114,6 +126,12 @@ export default function JobDetails() {
           >
             Edit
           </Link>
+          <Link
+            to={`/jobs/${job.id}/proposals`}
+            className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            View proposals ({job.proposalCount})
+          </Link>
           <button
             onClick={handleToggleStatus}
             className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -128,17 +146,32 @@ export default function JobDetails() {
           </button>
         </div>
       ) : (
-        user?.role === 'freelancer' &&
-        job.status === 'open' && (
-          <button className="px-5 py-2 rounded-md bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition">
-            Submit a proposal
-          </button>
+        user?.role === 'freelancer' && (
+          <>
+            {existingProposal ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                You already applied to this job — status:{' '}
+                <span className="font-medium capitalize">{existingProposal.status}</span>
+              </p>
+            ) : job.status === 'open' ? (
+              <button
+                onClick={() => setShowProposalModal(true)}
+                className="px-5 py-2 rounded-md bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition"
+              >
+                Submit a proposal
+              </button>
+            ) : (
+              <p className="text-sm text-gray-400">This job is no longer accepting proposals.</p>
+            )}
+          </>
         )
       )}
-      {!isOwner && user?.role === 'freelancer' && job.status === 'open' && (
-        <p className="text-xs text-gray-400 mt-2">
-          Proposal submission arrives in Phase 5.
-        </p>
+
+      {showProposalModal && (
+        <ProposalModal
+          jobId={job.id}
+          onClose={() => setShowProposalModal(false)}
+        />
       )}
     </div>
   );
