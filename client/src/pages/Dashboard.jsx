@@ -59,6 +59,14 @@ export default function Dashboard() {
       <Link to="/jobs" className="inline-block mt-2 text-sm text-primary-600 hover:underline">
         Browse jobs →
       </Link>
+      {user?.role === 'freelancer' && (
+        <>
+          <br />
+          <Link to="/my-proposals" className="inline-block mt-2 text-sm text-primary-600 hover:underline">
+            My proposals →
+          </Link>
+        </>
+      )}
     </div>
   );
 }
