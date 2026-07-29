@@ -45,6 +45,9 @@ async function startServer() {
   // --- REST upload routes (Cloudinary) ---
   app.use('/api/upload', uploadRoutes);
 
+  // --- Socket.io (init before Apollo so resolvers can broadcast via getIO()) ---
+  const io = initSocket(httpServer, CLIENT_URL);
+
   // --- Apollo Server (GraphQL) ---
   const apolloServer = new ApolloServer({ schema });
   await apolloServer.start();
@@ -54,6 +57,7 @@ async function startServer() {
     expressMiddleware(apolloServer, {
       context: async ({ req }) => ({
         user: getUserFromReq(req),
+        io,
       }),
     })
   );
@@ -65,9 +69,6 @@ async function startServer() {
   app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
   });
-
-  // --- Socket.io ---
-  initSocket(httpServer, CLIENT_URL);
 
   httpServer.listen(PORT, () => {
     console.log(`Handlr API ready at http://localhost:${PORT}/graphql`);
