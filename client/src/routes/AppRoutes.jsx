@@ -14,10 +14,11 @@ import CreateJob from '../pages/CreateJob';
 import EditJob from '../pages/EditJob';
 import MyProposals from '../pages/MyProposals';
 import JobProposals from '../pages/JobProposals';
+import Messages from '../pages/Messages';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
 
-// Phase 6+ will add: Messages, Notifications, Settings, Reviews, About, Contact
+// Phase 7+ will add: Notifications, Settings, Reviews, About, Contact
 
 export default function AppRoutes() {
   return (
@@ -91,6 +92,24 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute roles={['freelancer']}>
             <MyProposals />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <Messages />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/messages/:id"
+        element={
+          <ProtectedRoute>
+            <Messages />
           </ProtectedRoute>
         }
       />
