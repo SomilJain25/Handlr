@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 
 import { client } from './graphql/client';
 import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
 import AppRoutes from './routes/AppRoutes';
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Toaster position="top-right" />
+          <Navbar />
           <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
