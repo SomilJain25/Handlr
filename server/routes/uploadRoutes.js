@@ -1,11 +1,12 @@
 const express = require('express');
 const protect = require('../middleware/protect');
-const { uploadImage, uploadResume } = require('../middleware/upload');
+const { uploadImage, uploadResume, uploadProjectFile } = require('../middleware/upload');
 const {
   uploadAvatarFile,
   uploadResumeFile,
   uploadPortfolioImageFile,
   uploadCompanyLogoFile,
+  uploadProjectFileFile,
 } = require('../controllers/uploadController');
 
 const router = express.Router();
@@ -24,6 +25,12 @@ router.post(
   protect,
   uploadImage.single('file'),
   uploadCompanyLogoFile
+);
+router.post(
+  '/proposal-attachment',
+  protect,
+  uploadProjectFile.single('file'),
+  uploadProjectFileFile
 );
 
 // Multer error handler (file too large, wrong type, etc.)
