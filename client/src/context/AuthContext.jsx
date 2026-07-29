@@ -6,6 +6,7 @@ import {
   REGISTER_MUTATION,
   LOGOUT_MUTATION,
 } from '../graphql/auth';
+import { connectSocket, disconnectSocket } from '../services/socket';
 
 const AuthContext = createContext(null);
 
@@ -19,7 +20,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const stored = localStorage.getItem('handlr_user');
-    if (stored) setUser(JSON.parse(stored));
+    if (stored) {
+      setUser(JSON.parse(stored));
+      connectSocket();
+    }
     setInitializing(false);
   }, []);
 
@@ -28,6 +32,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('handlr_refresh_token', refreshToken);
     localStorage.setItem('handlr_user', JSON.stringify(authedUser));
     setUser(authedUser);
+    connectSocket();
   };
 
   const login = async (email, password) => {
@@ -53,6 +58,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('handlr_access_token');
     localStorage.removeItem('handlr_refresh_token');
     localStorage.removeItem('handlr_user');
+    disconnectSocket();
     setUser(null);
     toast.success('Logged out');
   };
