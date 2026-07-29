@@ -31,3 +31,5 @@ export const uploadPortfolioImage = (file, onProgress) =>
   uploadFile('portfolio-image', file, onProgress);
 export const uploadCompanyLogo = (file, onProgress) =>
   uploadFile('company-logo', file, onProgress);
+export const uploadProposalAttachment = (file, onProgress) =>
+  uploadFile('proposal-attachment', file, onProgress);
