@@ -31,6 +31,9 @@ const initSocket = (httpServer, clientUrl) => {
   io.on('connection', (socket) => {
     const { id: userId } = socket.user;
 
+    // Personal room for targeted events like notifications (io.to(userId).emit(...)).
+    socket.join(userId);
+
     if (!onlineUsers.has(userId)) onlineUsers.set(userId, new Set());
     onlineUsers.get(userId).add(socket.id);
     io.emit('userOnline', { userId, online: true });
@@ -76,6 +79,23 @@ const initSocket = (httpServer, clientUrl) => {
 
         io.to(conversationId).emit('newMessage', payload);
         ack?.({ message: payload });
+
+        // Notify the other participant (lazy require avoids a require-cycle
+        // with notificationService, which itself imports getIO from this file).
+        const otherParticipantId = conversation.participants
+          .map((p) => p.toString())
+          .find((p) => p !== userId);
+        if (otherParticipantId) {
+          const { createNotification } = require('../services/notificationService');
+          createNotification({
+            recipient: otherParticipantId,
+            type: 'new_message',
+            title: 'New message',
+            message: content.length > 80 ? `${content.slice(0, 80)}…` : content,
+            link: `/messages/${conversationId}`,
+            relatedId: conversationId,
+          }).catch((err) => console.error('Notification failed:', err.message));
+        }
       } catch (err) {
         console.error('sendMessage error:', err.message);
         ack?.({ error: 'Could not send message.' });
