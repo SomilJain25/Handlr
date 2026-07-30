@@ -1,6 +1,7 @@
 const Proposal = require('../../models/Proposal');
 const Job = require('../../models/Job');
 const { requireRole } = require('../../middleware/auth');
+const { createNotification } = require('../../services/notificationService');
 
 const ACTIVE_STATUSES = ['pending', 'shortlisted'];
 
@@ -71,6 +72,15 @@ module.exports = {
       job.proposalCount += 1;
       await job.save();
 
+      createNotification({
+        recipient: job.client,
+        type: 'new_proposal',
+        title: 'New proposal received',
+        message: `You received a new proposal on "${job.title}".`,
+        link: `/jobs/${job.id}/proposals`,
+        relatedId: job._id,
+      }).catch((err) => console.error('Notification failed:', err.message));
+
       return proposal;
     },
 
@@ -114,11 +124,36 @@ module.exports = {
       await proposal.save();
 
       // Auto-reject every other active proposal on this job and close it.
+      const otherActiveProposals = await Proposal.find({
+        job: proposal.job._id,
+        _id: { $ne: proposal._id },
+        status: { $in: ACTIVE_STATUSES },
+      });
       await Proposal.updateMany(
         { job: proposal.job._id, _id: { $ne: proposal._id }, status: { $in: ACTIVE_STATUSES } },
         { $set: { status: 'rejected' } }
       );
       await Job.findByIdAndUpdate(proposal.job._id, { status: 'closed' });
+
+      createNotification({
+        recipient: proposal.freelancer,
+        type: 'proposal_accepted',
+        title: 'Proposal accepted!',
+        message: `Your proposal on "${proposal.job.title}" was accepted.`,
+        link: `/jobs/${proposal.job._id}`,
+        relatedId: proposal.job._id,
+      }).catch((err) => console.error('Notification failed:', err.message));
+
+      otherActiveProposals.forEach((p) => {
+        createNotification({
+          recipient: p.freelancer,
+          type: 'proposal_rejected',
+          title: 'Proposal update',
+          message: `Your proposal on "${proposal.job.title}" was not selected.`,
+          link: `/my-proposals`,
+          relatedId: proposal.job._id,
+        }).catch((err) => console.error('Notification failed:', err.message));
+      });
 
       return proposal;
     },
@@ -131,6 +166,16 @@ module.exports = {
       }
       proposal.status = 'rejected';
       await proposal.save();
+
+      createNotification({
+        recipient: proposal.freelancer,
+        type: 'proposal_rejected',
+        title: 'Proposal update',
+        message: `Your proposal on "${proposal.job.title}" was not selected.`,
+        link: `/my-proposals`,
+        relatedId: proposal.job._id,
+      }).catch((err) => console.error('Notification failed:', err.message));
+
       return proposal;
     },
   },
