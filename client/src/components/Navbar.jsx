@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { useAuth } from '../context/AuthContext';
 import { CHATS_QUERY } from '../graphql/chat';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -35,6 +36,7 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        {user && <NotificationBell />}
         {user ? (
           <>
             <Link to="/dashboard" className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600">
