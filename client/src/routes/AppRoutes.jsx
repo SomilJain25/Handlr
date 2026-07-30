@@ -15,10 +15,11 @@ import EditJob from '../pages/EditJob';
 import MyProposals from '../pages/MyProposals';
 import JobProposals from '../pages/JobProposals';
 import Messages from '../pages/Messages';
+import Notifications from '../pages/Notifications';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
 
-// Phase 7+ will add: Notifications, Settings, Reviews, About, Contact
+// Phase 8+ will add: Settings, Reviews, About, Contact
 
 export default function AppRoutes() {
   return (
@@ -110,6 +111,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Messages />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Notifications />
           </ProtectedRoute>
         }
       />
