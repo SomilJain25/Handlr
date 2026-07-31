@@ -8,7 +8,7 @@ const jobTypeDefs = require('./typeDefs/job');
 const proposalTypeDefs = require('./typeDefs/proposal');
 const chatTypeDefs = require('./typeDefs/chat');
 const notificationTypeDefs = require('./typeDefs/notification');
-// const reviewTypeDefs = require('./typeDefs/review');     // Phase 8
+const reviewTypeDefs = require('./typeDefs/review');
 
 // --- resolvers (add new files here as phases progress) ---
 const authResolvers = require('./resolvers/auth');
@@ -17,7 +17,7 @@ const jobResolvers = require('./resolvers/job');
 const proposalResolvers = require('./resolvers/proposal');
 const chatResolvers = require('./resolvers/chat');
 const notificationResolvers = require('./resolvers/notification');
-// const reviewResolvers = require('./resolvers/review');
+const reviewResolvers = require('./resolvers/review');
 
 const typeDefs = mergeTypeDefs([
   authTypeDefs,
@@ -26,6 +26,7 @@ const typeDefs = mergeTypeDefs([
   proposalTypeDefs,
   chatTypeDefs,
   notificationTypeDefs,
+  reviewTypeDefs,
 ]);
 
 const mergeResolvers = (resolverArr) => {
@@ -53,6 +54,7 @@ const resolvers = mergeResolvers([
   proposalResolvers,
   chatResolvers,
   notificationResolvers,
+  reviewResolvers,
 ]);
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
