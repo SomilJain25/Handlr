@@ -23,6 +23,11 @@ export const JOB_CARD_FIELDS = gql`
       companyName
       profilePicture
     }
+    hiredFreelancer {
+      id
+      name
+      profilePicture
+    }
   }
 `;
 
