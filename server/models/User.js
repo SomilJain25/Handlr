@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
     profilePicture: { type: String, default: '' },
     isVerified: { type: Boolean, default: false },
     isSuspended: { type: Boolean, default: false },
+    reportCount: { type: Number, default: 0 },
     refreshTokens: [{ type: String, select: false }], // supports multi-device logout
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
