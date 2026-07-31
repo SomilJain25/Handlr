@@ -8,6 +8,8 @@ export const FULL_PROFILE_FIELDS = gql`
     role
     profilePicture
     isVerified
+    averageRating
+    reviewCount
     bio
     skills
     hourlyRate
