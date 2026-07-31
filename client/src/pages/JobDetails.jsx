@@ -11,19 +11,28 @@ import {
 } from '../graphql/job';
 import { MY_PROPOSALS_QUERY } from '../graphql/proposal';
 import { START_CONVERSATION_MUTATION } from '../graphql/chat';
+import { COMPLETE_JOB_MUTATION, REVIEWS_FOR_JOB_QUERY } from '../graphql/review';
 import ProposalModal from '../components/ProposalModal';
+import ReviewModal from '../components/ReviewModal';
 
 export default function JobDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [showProposalModal, setShowProposalModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const { data, loading, error } = useQuery(JOB_QUERY, { variables: { id } });
   const [deleteJob] = useMutation(DELETE_JOB_MUTATION);
   const [closeJob] = useMutation(CLOSE_JOB_MUTATION);
   const [reopenJob] = useMutation(REOPEN_JOB_MUTATION);
   const [startConversation] = useMutation(START_CONVERSATION_MUTATION);
+  const [completeJob] = useMutation(COMPLETE_JOB_MUTATION);
+
+  const { data: reviewsData, refetch: refetchReviews } = useQuery(REVIEWS_FOR_JOB_QUERY, {
+    variables: { jobId: id },
+    skip: !data?.job || data.job.status !== 'completed',
+  });
 
   // Check whether this freelancer already has an active proposal on this job.
   const { data: myProposalsData } = useQuery(MY_PROPOSALS_QUERY, {
@@ -75,6 +84,21 @@ export default function JobDetails() {
       toast.error(err.message || 'Could not start conversation');
     }
   };
+
+  const handleCompleteJob = async () => {
+    if (!confirm('Mark this job as complete? Both sides will be able to leave a review.')) return;
+    try {
+      await completeJob({ variables: { id } });
+      toast.success('Job marked complete');
+    } catch (err) {
+      toast.error(err.message || 'Could not mark complete');
+    }
+  };
+
+  // Who the current user would be reviewing, if eligible.
+  const revieweeId = isOwner ? job.hiredFreelancer?.id : existingProposal?.status === 'accepted' ? job.client.id : null;
+  const revieweeName = isOwner ? job.hiredFreelancer?.name : job.client.name;
+  const myReview = reviewsData?.reviewsForJob.find((r) => r.reviewer.id === user?.id);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
@@ -145,12 +169,22 @@ export default function JobDetails() {
           >
             View proposals ({job.proposalCount})
           </Link>
-          <button
-            onClick={handleToggleStatus}
-            className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
-          >
-            {job.status === 'open' ? 'Close job' : 'Reopen job'}
-          </button>
+          {job.status !== 'completed' && (
+            <button
+              onClick={handleToggleStatus}
+              className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              {job.status === 'open' ? 'Close job' : 'Reopen job'}
+            </button>
+          )}
+          {job.status === 'closed' && job.hiredFreelancer && (
+            <button
+              onClick={handleCompleteJob}
+              className="px-4 py-2 rounded-md bg-primary-500 text-white text-sm font-medium hover:bg-primary-600"
+            >
+              Mark complete
+            </button>
+          )}
           <button
             onClick={handleDelete}
             className="px-4 py-2 rounded-md border border-red-300 text-red-500 text-sm hover:bg-red-50 dark:hover:bg-red-500/10"
@@ -191,6 +225,48 @@ export default function JobDetails() {
         <ProposalModal
           jobId={job.id}
           onClose={() => setShowProposalModal(false)}
+        />
+      )}
+
+      {job.status === 'completed' && (
+        <div className="mt-8 border-t border-gray-200 dark:border-gray-800 pt-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Reviews</h2>
+            {revieweeId && !myReview && (
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="text-sm text-primary-600 hover:underline"
+              >
+                Leave a review
+              </button>
+            )}
+          </div>
+
+          {reviewsData?.reviewsForJob.length === 0 && (
+            <p className="text-sm text-gray-400">No reviews yet.</p>
+          )}
+
+          <div className="space-y-3">
+            {reviewsData?.reviewsForJob.map((r) => (
+              <div key={r.id} className="border border-gray-200 dark:border-gray-800 rounded-md p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium">{r.reviewer.name}</span>
+                  <span className="text-amber-400 text-sm">{'★'.repeat(r.rating)}</span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{r.feedback}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showReviewModal && revieweeId && (
+        <ReviewModal
+          jobId={job.id}
+          revieweeId={revieweeId}
+          revieweeName={revieweeName}
+          onClose={() => setShowReviewModal(false)}
+          onSubmitted={refetchReviews}
         />
       )}
     </div>
