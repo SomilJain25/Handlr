@@ -142,6 +142,12 @@ module.exports = {
     id: (job) => job._id.toString(),
     category: (job) => Category.findById(job.category),
     client: (job) => require('../../models/User').findById(job.client),
+    hiredFreelancer: async (job) => {
+      const Proposal = require('../../models/Proposal');
+      const accepted = await Proposal.findOne({ job: job._id, status: 'accepted' });
+      if (!accepted) return null;
+      return require('../../models/User').findById(accepted.freelancer);
+    },
     deadline: (job) => (job.deadline ? job.deadline.toISOString() : null),
     createdAt: (job) => job.createdAt.toISOString(),
     updatedAt: (job) => job.updatedAt.toISOString(),
