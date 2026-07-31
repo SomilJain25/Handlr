@@ -16,6 +16,7 @@ module.exports = gql`
   enum JobStatus {
     open
     closed
+    completed
   }
 
   type Category {
@@ -36,6 +37,7 @@ module.exports = gql`
     locationType: LocationType!
     status: JobStatus!
     client: User!
+    hiredFreelancer: User
     proposalCount: Int!
     createdAt: String!
     updatedAt: String!
