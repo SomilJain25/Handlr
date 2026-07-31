@@ -62,7 +62,14 @@ export default function ClientProfile() {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold mb-6">Client Profile</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-2xl font-bold">Client Profile</h1>
+        {data?.me?.reviewCount > 0 && (
+          <span className="text-sm text-amber-500">
+            ★ {data.me.averageRating} ({data.me.reviewCount} review{data.me.reviewCount === 1 ? '' : 's'})
+          </span>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="flex items-center gap-4 mb-6">
