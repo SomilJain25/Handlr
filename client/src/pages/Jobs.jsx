@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { JOBS_QUERY, CATEGORIES_QUERY } from '../graphql/job';
 import JobCard from '../components/JobCard';
+import { SkeletonGrid } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
 
 const PAGE_SIZE = 12;
 
@@ -105,13 +107,15 @@ export default function Jobs() {
         </select>
       </div>
 
-      {loading && !data && <p className="text-gray-400 text-sm">Loading jobs…</p>}
+      {loading && !data && <SkeletonGrid count={6} />}
       {error && <p className="text-red-500 text-sm">Failed to load jobs: {error.message}</p>}
 
       {data?.jobs.jobs.length === 0 && (
-        <div className="text-center py-16 text-gray-400">
-          <p>No jobs match your filters.</p>
-        </div>
+        <EmptyState
+          icon="🔍"
+          title="No jobs match your filters"
+          subtitle="Try widening your search or clearing a filter."
+        />
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
