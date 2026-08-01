@@ -33,12 +33,12 @@ export default function Select({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2 rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-left hover:border-gray-400 dark:hover:border-gray-600 transition"
+        className="w-full flex items-center justify-between gap-2 rounded-md border border-gray-300 dark:border-gray-700 bg-transparent dark:bg-transparent px-3 py-2 text-sm text-left text-gray-800 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-600 transition"
       >
-        <span className={selected ? '' : 'text-gray-400'}>
+        <span className={selected ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-300'}>
           {selected ? selected.label : placeholder}
         </span>
-        <span className="text-gray-400 text-xs shrink-0">{open ? '▴' : '▾'}</span>
+        <span className="text-gray-400 dark:text-gray-400 text-xs shrink-0">{open ? '▴' : '▾'}</span>
       </button>
 
       {open && (
@@ -54,7 +54,7 @@ export default function Select({
               className={`w-full text-left px-3 py-2 text-sm transition ${
                 opt.value === value
                   ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 font-medium'
-                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               {opt.label}
