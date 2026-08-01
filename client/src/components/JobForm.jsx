@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useQuery } from '@apollo/client';
 import { CATEGORIES_QUERY } from '../graphql/job';
 import FormField from './FormField';
+import Select from './Select';
 
 /**
  * <JobForm defaultValues={...} onSubmit={fn} submitLabel="Post job" />
@@ -12,6 +13,8 @@ export default function JobForm({ defaultValues, onSubmit, submitLabel, submitti
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -26,6 +29,10 @@ export default function JobForm({ defaultValues, onSubmit, submitLabel, submitti
       ...defaultValues,
     },
   });
+
+  // Select isn't a native input, so it can't take a ref from register().
+  // Register the field for validation tracking, then drive it via setValue.
+  register('categoryId', { required: 'Category is required' });
 
   const submit = (values) => {
     onSubmit({
@@ -89,39 +96,43 @@ export default function JobForm({ defaultValues, onSubmit, submitLabel, submitti
 
       <div className="grid grid-cols-3 gap-4">
         <FormField label="Category" error={errors.categoryId}>
-          <select
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2"
-            {...register('categoryId', { required: 'Category is required' })}
-          >
-            <option value="">Select…</option>
-            {categoriesData?.categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={watch('categoryId')}
+            onChange={(v) => setValue('categoryId', v, { shouldValidate: true })}
+            placeholder="Select…"
+            options={
+              categoriesData?.categories.map((c) => ({ value: c.id, label: c.name })) || []
+            }
+          />
+          {categoriesData && categoriesData.categories.length === 0 && (
+            <p className="mt-1 text-xs text-amber-500">
+              No categories exist yet — an admin needs to run the seed script.
+            </p>
+          )}
         </FormField>
 
         <FormField label="Experience level">
-          <select
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2"
-            {...register('experienceLevel')}
-          >
-            <option value="entry">Entry level</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="expert">Expert</option>
-          </select>
+          <Select
+            value={watch('experienceLevel')}
+            onChange={(v) => setValue('experienceLevel', v)}
+            options={[
+              { value: 'entry', label: 'Entry level' },
+              { value: 'intermediate', label: 'Intermediate' },
+              { value: 'expert', label: 'Expert' },
+            ]}
+          />
         </FormField>
 
         <FormField label="Location">
-          <select
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2"
-            {...register('locationType')}
-          >
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">Onsite</option>
-          </select>
+          <Select
+            value={watch('locationType')}
+            onChange={(v) => setValue('locationType', v)}
+            options={[
+              { value: 'remote', label: 'Remote' },
+              { value: 'hybrid', label: 'Hybrid' },
+              { value: 'onsite', label: 'Onsite' },
+            ]}
+          />
         </FormField>
       </div>
 

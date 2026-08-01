@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { MY_PROPOSALS_QUERY, WITHDRAW_PROPOSAL_MUTATION } from '../graphql/proposal';
 import EmptyState from '../components/EmptyState';
+import Select from '../components/Select';
 
 const STATUS_STYLE = {
   pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
@@ -35,18 +36,19 @@ export default function MyProposals() {
     <div className="max-w-3xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">My proposals</h1>
-        <select
+        <Select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="">All statuses</option>
-          <option value="pending">Pending</option>
-          <option value="shortlisted">Shortlisted</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
-          <option value="withdrawn">Withdrawn</option>
-        </select>
+          onChange={setStatusFilter}
+          className="w-44"
+          options={[
+            { value: '', label: 'All statuses' },
+            { value: 'pending', label: 'Pending' },
+            { value: 'shortlisted', label: 'Shortlisted' },
+            { value: 'accepted', label: 'Accepted' },
+            { value: 'rejected', label: 'Rejected' },
+            { value: 'withdrawn', label: 'Withdrawn' },
+          ]}
+        />
       </div>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}

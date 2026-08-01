@@ -6,6 +6,7 @@ import { JOBS_QUERY, CATEGORIES_QUERY } from '../graphql/job';
 import JobCard from '../components/JobCard';
 import { SkeletonGrid } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
+import Select from '../components/Select';
 
 const PAGE_SIZE = 12;
 
@@ -32,8 +33,8 @@ export default function Jobs() {
     fetchPolicy: 'cache-and-network',
   });
 
-  const resetAndFilter = (setter) => (e) => {
-    setter(e.target.value);
+  const resetAndFilter = (setter) => (value) => {
+    setter(value);
     setOffset(0);
   };
 
@@ -56,55 +57,58 @@ export default function Jobs() {
         <input
           placeholder="Search jobs…"
           value={search}
-          onChange={resetAndFilter(setSearch)}
+          onChange={(e) => resetAndFilter(setSearch)(e.target.value)}
           className="flex-1 min-w-[200px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
         />
 
-        <select
+        <Select
           value={categoryId}
           onChange={resetAndFilter(setCategoryId)}
-          className="rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="">All categories</option>
-          {categoriesData?.categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          placeholder="All categories"
+          className="w-48"
+          options={[
+            { value: '', label: 'All categories' },
+            ...(categoriesData?.categories.map((c) => ({ value: c.id, label: c.name })) || []),
+          ]}
+        />
 
-        <select
+        <Select
           value={experienceLevel}
           onChange={resetAndFilter(setExperienceLevel)}
-          className="rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="">Any experience</option>
-          <option value="entry">Entry level</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="expert">Expert</option>
-        </select>
+          placeholder="Any experience"
+          className="w-44"
+          options={[
+            { value: '', label: 'Any experience' },
+            { value: 'entry', label: 'Entry level' },
+            { value: 'intermediate', label: 'Intermediate' },
+            { value: 'expert', label: 'Expert' },
+          ]}
+        />
 
-        <select
+        <Select
           value={locationType}
           onChange={resetAndFilter(setLocationType)}
-          className="rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="">Any location</option>
-          <option value="remote">Remote</option>
-          <option value="hybrid">Hybrid</option>
-          <option value="onsite">Onsite</option>
-        </select>
+          placeholder="Any location"
+          className="w-40"
+          options={[
+            { value: '', label: 'Any location' },
+            { value: 'remote', label: 'Remote' },
+            { value: 'hybrid', label: 'Hybrid' },
+            { value: 'onsite', label: 'Onsite' },
+          ]}
+        />
 
-        <select
+        <Select
           value={sort}
           onChange={resetAndFilter(setSort)}
-          className="rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
-        >
-          <option value="NEWEST">Newest</option>
-          <option value="OLDEST">Oldest</option>
-          <option value="BUDGET_HIGH">Budget: high to low</option>
-          <option value="BUDGET_LOW">Budget: low to high</option>
-        </select>
+          className="w-52"
+          options={[
+            { value: 'NEWEST', label: 'Newest' },
+            { value: 'OLDEST', label: 'Oldest' },
+            { value: 'BUDGET_HIGH', label: 'Budget: high to low' },
+            { value: 'BUDGET_LOW', label: 'Budget: low to high' },
+          ]}
+        />
       </div>
 
       {loading && !data && <SkeletonGrid count={6} />}

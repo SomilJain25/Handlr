@@ -10,6 +10,7 @@ import {
 } from '../services/uploadService';
 import FormField from '../components/FormField';
 import FileUploadButton from '../components/FileUploadButton';
+import Select from '../components/Select';
 
 export default function FreelancerProfile() {
   const { data, loading } = useQuery(ME_FULL_QUERY, { fetchPolicy: 'network-only' });
@@ -160,14 +161,15 @@ export default function FreelancerProfile() {
           </FormField>
 
           <FormField label="Availability">
-            <select
-              className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2"
-              {...register('availability')}
-            >
-              <option value="full_time">Full-time</option>
-              <option value="part_time">Part-time</option>
-              <option value="not_available">Not available</option>
-            </select>
+            <Select
+              value={watch('availability')}
+              onChange={(v) => setValue('availability', v)}
+              options={[
+                { value: 'full_time', label: 'Full-time' },
+                { value: 'part_time', label: 'Part-time' },
+                { value: 'not_available', label: 'Not available' },
+              ]}
+            />
           </FormField>
         </div>
 
