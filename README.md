@@ -1,84 +1,328 @@
-# Handlr — Freelance Marketplace for Tech Professionals
+# 🚀 Handlr – Modern Freelance Marketplace for Technology Professionals
 
-Full-stack: React + Vite + Tailwind (client) · Express + Apollo Server GraphQL + Socket.io (server) · MongoDB Atlas.
+![React](https://img.shields.io/badge/React-19-blue?logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-Express-green?logo=node.js)
+![GraphQL](https://img.shields.io/badge/GraphQL-Apollo-E10098?logo=graphql)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)
+![Socket.io](https://img.shields.io/badge/Socket.io-Real--Time-black?logo=socket.io)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-## ✅ Phase 1 — Project Scaffolding (done)
+Handlr is a **production-ready full-stack freelance marketplace** built exclusively for **technology professionals**. It enables clients to post software projects while freelancers can discover opportunities, submit proposals, collaborate through real-time messaging, manage projects, and complete work securely.
 
-What's included:
-- Server: Express + Apollo Server 4 wired together, MongoDB connection, security middleware
-  (Helmet, CORS, rate limiting, Mongo sanitize), Socket.io bootstrap with JWT handshake auth,
-  base `User` model, minimal working `register` / `login` / `refreshToken` / `logout` / `me`
-  resolvers so the app is runnable end-to-end today.
-- Client: Vite + React + Tailwind (dark-mode ready) + Apollo Client (with auth header link) +
-  React Router + Auth context + toast notifications + a Home page that live-checks the API
-  connection via a `_health` query.
+The project demonstrates **modern software engineering practices**, including scalable architecture, GraphQL APIs, JWT authentication, WebSocket communication, secure file uploads, and responsive UI design.
 
-## How to run Phase 1
+---
 
-**1. Server**
-```bash
-cd server
-cp .env.example .env     # then fill in MONGO_URI, JWT secrets, Cloudinary keys
-npm install
-npm run dev               # http://localhost:5000/graphql
+# ✨ Features
+
+## Authentication
+
+- JWT Authentication
+- Access & Refresh Tokens
+- Secure Password Hashing (bcrypt)
+- Remember Me
+- Forgot Password
+- Reset Password
+- Protected Routes
+- Role-Based Authorization
+
+---
+
+## Freelancer Features
+
+- Register/Login
+- Edit Professional Profile
+- Upload Resume
+- Upload Portfolio
+- Search Jobs
+- Advanced Job Filters
+- Submit Proposals
+- Withdraw Proposals
+- Real-Time Chat
+- Upload Completed Work
+- Track Earnings
+- Notifications
+- Review Clients
+
+---
+
+## Client Features
+
+- Register/Login
+- Company Profile
+- Post Jobs
+- Edit Jobs
+- Delete Jobs
+- Close/Reopen Jobs
+- View Proposals
+- Hire Freelancers
+- Chat
+- Approve Deliverables
+- Mock Payment Status
+- Review Freelancers
+
+---
+
+## Admin Features
+
+- Dashboard Analytics
+- User Management
+- Suspend Accounts
+- Remove Fake Jobs
+- Manage Categories
+- Moderate Reviews
+
+---
+
+## Job Marketplace
+
+- Create Jobs
+- Search Jobs
+- Skill Filters
+- Budget Filters
+- Experience Filters
+- Category Filters
+- Remote/Hybrid/Onsite Filters
+- Pagination
+- Sorting
+
+---
+
+## Proposal System
+
+Freelancers can:
+
+- Submit Proposal
+- Cover Letter
+- Proposed Budget
+- Estimated Duration
+- Upload Documents
+
+Clients can:
+
+- Accept Proposal
+- Reject Proposal
+- Shortlist Proposal
+- Chat with Freelancer
+
+---
+
+## Dashboards
+
+### Freelancer Dashboard
+
+- Active Projects
+- Pending Proposals
+- Completed Projects
+- Total Earnings
+- Monthly Earnings Chart
+- Success Rate
+- Notifications
+
+### Client Dashboard
+
+- Active Jobs
+- Hired Freelancers
+- Pending Proposals
+- Hiring Analytics
+- Spending Analytics
+
+### Admin Dashboard
+
+- Total Users
+- Active Jobs
+- Revenue (Mock)
+- User Growth
+- Freelancer Activity
+- Reports
+
+---
+
+## Reviews & Ratings
+
+- Client Reviews
+- Freelancer Reviews
+- Ratings
+- Feedback
+- Review History
+
+---
+
+## Real-Time Communication
+
+Powered by **Socket.io**
+
+- Live Chat
+- Typing Indicator
+- Online Users
+- Read Receipts
+- Seen Messages
+- Live Notifications
+- Proposal Updates
+- Live Job Updates
+
+---
+
+# 🛠 Technology Stack
+
+## Frontend
+
+- React.js
+- Vite
+- Tailwind CSS
+- React Router
+- Apollo Client
+- Socket.io Client
+- React Hook Form
+- Context API
+- Framer Motion
+- React Hot Toast
+
+---
+
+## Backend
+
+- Node.js
+- Express.js
+- Apollo Server
+- GraphQL
+- Socket.io
+- JWT
+- bcrypt
+- Multer
+- Cloudinary
+- dotenv
+- Helmet
+- Morgan
+- CORS
+
+---
+
+## Database
+
+- MongoDB Atlas, Mongoose ODM
+
+---
+
+## Deployment
+
+| Service | Platform |
+|---------|----------|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | MongoDB Atlas |
+| Media Storage | Cloudinary |
+
+---
+
+
+# 👥 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| Freelancer | Apply Jobs, Chat, Upload Portfolio, Reviews |
+| Client | Post Jobs, Hire Freelancers, Approve Work |
+| Admin | Manage Users, Jobs, Categories & Reviews |
+
+---
+
+# 🗄 Database Collections
+
+- Users
+- Jobs
+- Proposals
+- Projects
+- Messages
+- Notifications
+- Reviews
+- Categories
+
+---
+
+# 🔒 Security Features
+
+- JWT Authentication
+- Password Hashing (bcrypt)
+- Helmet
+- CORS Protection
+- Rate Limiting
+- Input Validation
+- XSS Protection
+- MongoDB Injection Protection
+- Secure File Uploads
+
+---
+
+# 📁 File Uploads
+
+Supported uploads include:
+
+- Resume (PDF)
+- Portfolio Images
+- Project Files
+- Profile Pictures
+
+---
+
+
+# 🚀 Future Enhancements
+
+- AI Proposal Writing Assistant
+- AI Resume Analyzer
+- AI Job Description Generator
+- AI Freelancer Recommendation
+- Bookmark Jobs
+- Saved Freelancers
+- Email Notifications
+- Progressive Web App (PWA)
+- Stripe Payment Integration
+- Video Interview Module
+
+---
+
+# 📸 Screenshots
+
+
+```
+/screenshots
+
+home.png
+
+dashboard.png
+
+jobs.png
+
+chat.png
+
+profile.png
 ```
 
-**2. Client**
-```bash
-cd client
-cp .env.example .env
-npm install
-npm run dev               # http://localhost:5173
-```
+---
 
-Open the client — you should see "API connected ✓" on the home page once both are running
-and `MONGO_URI` points to a real Atlas cluster (register/login will 500 until you set that up,
-but the health check only needs the DB connection, not auth).
+# 🤝 Contributors
 
-## Roadmap
+- **Somil Jain**
 
-- [x] **Phase 1** — Scaffolding, DB connection, GraphQL/Socket.io bootstrap
-- [ ] **Phase 2** — Full auth (refresh rotation, email verification, forgot/reset password), protected routes on client
-- [ ] **Phase 3** — Freelancer & Client profile CRUD + Cloudinary uploads
-- [ ] **Phase 4** — Jobs & Categories (CRUD, search/filter/pagination)
-- [ ] **Phase 5** — Proposals workflow
-- [ ] **Phase 6** — Real-time chat (Socket.io): typing, online users, read receipts
-- [ ] **Phase 7** — Notifications (GraphQL subscriptions + toasts)
-- [ ] **Phase 8** — Reviews & ratings
-- [ ] **Phase 9** — Dashboards (Freelancer/Client/Admin) + charts + admin moderation
-- [ ] **Phase 10** — UI polish, PWA, error pages, deployment (Vercel/Render)
+Feel free to contribute by opening issues or submitting pull requests.
 
-## Folder structure
+---
 
-```
-handlr/
-  server/
-    config/        # db.js, cloudinary.js
-    graphql/
-      typeDefs/     # one file per domain (auth.js so far)
-      resolvers/    # one file per domain (auth.js so far)
-      index.js      # merges all typeDefs/resolvers into one schema
-    middleware/     # auth.js (JWT context + guards)
-    models/         # User.js (Job, Proposal, etc. arrive in later phases)
-    socket/         # Socket.io bootstrap
-    utils/          # generateTokens.js
-    server.js       # entry point
-  client/
-    src/
-      graphql/      # Apollo Client setup
-      context/      # AuthContext
-      pages/        # Home, NotFound (more each phase)
-      routes/       # AppRoutes.jsx
-      App.jsx / main.jsx
-```
+# 📄 License
 
-## Notes for the next phase
+This project is licensed under the **MIT License**.
 
-To add a new domain (e.g. Jobs in Phase 4):
-1. Create `server/models/Job.js`
-2. Create `server/graphql/typeDefs/job.js` and `server/graphql/resolvers/job.js`
-3. Import and merge them in `server/graphql/index.js` (commented placeholders are already there)
-4. Add client pages under `client/src/pages/` and routes in `AppRoutes.jsx`
+---
 
-No changes to `server.js` are needed for new domains — it reads the merged schema from
-`graphql/index.js` automatically.
+# ⭐ Support
+
+If you found this project helpful:
+
+⭐ Star the repository
+
+🍴 Fork the repository
+
+🛠 Contribute to the project
+
+---
+
+## Made with ❤️ using React, GraphQL, Node.js, MongoDB & Socket.io.
