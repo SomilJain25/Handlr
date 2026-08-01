@@ -3,7 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#3b6ef0" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Handlr — Hire Top Tech Talent</title>
+    <script>
+      (function () {
+        var stored = localStorage.getItem('handlr_theme');
+        var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
   </head>
   <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
     <div id="root"></div>
