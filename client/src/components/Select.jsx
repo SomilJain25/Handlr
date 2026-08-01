@@ -42,7 +42,7 @@ export default function Select({
       </button>
 
       {open && (
-        <div className="absolute left-0 z-20 mt-1 w-full max-h-60 overflow-y-auto rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg">
+        <div className="absolute left-0 z-20 mt-1 w-full max-h-60 overflow-y-auto rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -54,7 +54,7 @@ export default function Select({
               className={`w-full text-left px-3 py-2 text-sm transition ${
                 opt.value === value
                   ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 font-medium'
-                  : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               {opt.label}
