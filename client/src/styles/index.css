@@ -5,3 +5,16 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Native form controls (select dropdowns, date pickers, scrollbars) are
+   rendered by the browser/OS, not by our CSS - Tailwind's `dark:` variant
+   can't reach inside a <select> popup. Setting color-scheme tells the
+   browser which built-in palette to use so dropdown text stays readable
+   in both themes instead of defaulting to light-on-white always. */
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
