@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { MY_PROPOSALS_QUERY, WITHDRAW_PROPOSAL_MUTATION } from '../graphql/proposal';
+import EmptyState from '../components/EmptyState';
 
 const STATUS_STYLE = {
   pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
@@ -50,7 +51,11 @@ export default function MyProposals() {
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
       {!loading && data?.myProposals.length === 0 && (
-        <p className="text-gray-400 text-sm">You haven't submitted any proposals yet.</p>
+        <EmptyState
+          icon="📄"
+          title="You haven't submitted any proposals yet"
+          subtitle="Browse open jobs and apply to get started."
+        />
       )}
 
       <div className="space-y-4">
