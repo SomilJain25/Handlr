@@ -17,6 +17,8 @@ const uploadRoutes = require('./routes/uploadRoutes');
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const CLIENT_URLS = CLIENT_URL.split(',').map((s) => s.trim()).filter(Boolean);
+const SOCKET_ORIGIN = CLIENT_URLS[0] || CLIENT_URL;
 
 async function startServer() {
   await connectDB();
@@ -26,7 +28,17 @@ async function startServer() {
 
   // --- Security & core middleware ---
   app.use(helmet());
-  app.use(cors({ origin: CLIENT_URL, credentials: true }));
+  // Allow multiple origins via comma-separated CLIENT_URL env var.
+  const corsOptions = {
+    origin: (origin, callback) => {
+      // Allow server-to-server requests or tools like curl (no origin)
+      if (!origin) return callback(null, true);
+      if (CLIENT_URLS.includes(origin) || CLIENT_URLS.includes('*')) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
   app.use(express.json());
   app.use(mongoSanitize()); // MongoDB operator injection protection
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -46,7 +58,7 @@ async function startServer() {
   app.use('/api/upload', uploadRoutes);
 
   // --- Socket.io (init before Apollo so resolvers can broadcast via getIO()) ---
-  const io = initSocket(httpServer, CLIENT_URL);
+  const io = initSocket(httpServer, SOCKET_ORIGIN);
 
   // --- Apollo Server (GraphQL) ---
   const apolloServer = new ApolloServer({ schema });

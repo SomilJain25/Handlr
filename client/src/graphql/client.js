@@ -3,7 +3,11 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { fromPromise } from '@apollo/client/link/utils';
 
-const GRAPHQL_URL = import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:5000/graphql';
+const GRAPHQL_URL =
+  import.meta.env.VITE_GRAPHQL_URL ||
+  (typeof window !== 'undefined'
+    ? `${window.location.origin}/graphql`
+    : 'http://localhost:5000/graphql');
 
 const httpLink = new HttpLink({ uri: GRAPHQL_URL });
 
