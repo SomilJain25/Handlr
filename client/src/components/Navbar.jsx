@@ -6,6 +6,26 @@ import { useTheme } from '../context/ThemeContext';
 import { CHATS_QUERY } from '../graphql/chat';
 import NotificationBell from './NotificationBell';
 
+function LogoMark() {
+  return (
+    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0">
+      <svg
+        className="w-4 h-4 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -22,22 +42,23 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b border-gray-200 dark:border-gray-800 px-6 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="font-bold text-lg">
+    <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-ink/80 border-b border-gray-200/70 dark:border-gray-800/50">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+            <LogoMark />
             Handlr
           </Link>
           <Link
             to="/jobs"
-            className="hidden sm:inline text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600"
+            className="hidden sm:inline text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
           >
             Jobs
           </Link>
           {user && (
             <Link
               to="/messages"
-              className="hidden sm:inline text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 relative"
+              className="hidden sm:inline text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition relative"
             >
               Messages
               {unreadTotal > 0 && (
@@ -50,32 +71,41 @@ export default function Navbar() {
         </div>
 
         {/* Desktop controls */}
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-3">
           <button
             onClick={toggleTheme}
             aria-label="Toggle dark mode"
-            className="text-sm text-gray-500 hover:text-primary-600"
+            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800/60 hover:bg-gray-200 dark:hover:bg-gray-700/60 flex items-center justify-center transition"
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
           {user && <NotificationBell />}
           {user ? (
             <>
-              <Link to="/dashboard" className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600">
+              <Link
+                to="/dashboard"
+                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
+              >
                 Dashboard
               </Link>
-              <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500">
+              <button
+                onClick={handleLogout}
+                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-red-500 transition"
+              >
                 Log out
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600">
+              <Link
+                to="/login"
+                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
+              >
                 Log in
               </Link>
               <Link
                 to="/register"
-                className="text-sm px-3 py-1.5 rounded-md bg-primary-500 text-white hover:bg-primary-600"
+                className="text-sm font-semibold px-5 py-2.5 rounded-xl bg-primary-500 text-white shadow-glow hover:bg-primary-400 hover:shadow-glow-lg hover:-translate-y-0.5 transition"
               >
                 Sign up
               </Link>
@@ -89,7 +119,7 @@ export default function Navbar() {
           <button
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
-            className="text-xl leading-none"
+            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800/60 flex items-center justify-center text-lg leading-none"
           >
             {mobileOpen ? '✕' : '☰'}
           </button>
@@ -98,7 +128,7 @@ export default function Navbar() {
 
       {/* Mobile menu panel */}
       {mobileOpen && (
-        <div className="sm:hidden mt-3 pb-2 flex flex-col gap-3 text-sm">
+        <div className="sm:hidden px-6 pb-4 flex flex-col gap-3 text-sm border-t border-gray-200/70 dark:border-gray-800/50 pt-3">
           <Link to="/jobs" onClick={() => setMobileOpen(false)} className="text-gray-600 dark:text-gray-300">
             Jobs
           </Link>
@@ -124,7 +154,11 @@ export default function Navbar() {
               <Link to="/login" onClick={() => setMobileOpen(false)} className="text-gray-600 dark:text-gray-300">
                 Log in
               </Link>
-              <Link to="/register" onClick={() => setMobileOpen(false)} className="text-primary-600 font-medium">
+              <Link
+                to="/register"
+                onClick={() => setMobileOpen(false)}
+                className="text-primary-500 font-semibold"
+              >
                 Sign up
               </Link>
             </>
