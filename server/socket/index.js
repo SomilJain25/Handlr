@@ -9,9 +9,9 @@ const onlineUsers = new Map();
 let ioInstance = null;
 const getIO = () => ioInstance;
 
-const initSocket = (httpServer, clientUrl) => {
+const initSocket = (httpServer, allowedOrigins) => {
   const io = new Server(httpServer, {
-    cors: { origin: clientUrl, credentials: true },
+    cors: { origin: allowedOrigins, credentials: true },
   });
   ioInstance = io;
 

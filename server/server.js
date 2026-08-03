@@ -16,9 +16,45 @@ const { initSocket } = require('./socket');
 const uploadRoutes = require('./routes/uploadRoutes');
 
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
-const CLIENT_URLS = CLIENT_URL.split(',').map((s) => s.trim()).filter(Boolean);
-const SOCKET_ORIGIN = CLIENT_URLS[0] || CLIENT_URL;
+
+/**
+ * Browsers reject an Access-Control-Allow-Origin header that isn't a full
+ * origin (scheme + host) - if CLIENT_URL is set to e.g. "myapp.vercel.app"
+ * instead of "https://myapp.vercel.app", cors() would echo that invalid
+ * value straight into the header and every cross-origin request fails with
+ * a CORS error that looks nothing like the actual misconfiguration. Normalize
+ * it here so a missing scheme or trailing slash doesn't quietly break CORS.
+ */
+const normalizeOrigin = (url) => {
+  const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  return withScheme.replace(/\/+$/, ''); // strip trailing slash(es)
+};
+
+/**
+ * CLIENT_URL accepts a comma-separated list, since a single Vercel project
+ * commonly has multiple stable domains that all need to work (the custom
+ * alias plus the git-branch alias) - a single hardcoded origin can only ever
+ * match one of them. Vercel's ephemeral per-deployment hash URLs (the ones
+ * that change on every single push, e.g. handlr-l8vcaxllr-....vercel.app)
+ * are intentionally NOT meant to be added here - test against the stable
+ * domains instead.
+ */
+const ALLOWED_ORIGINS = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean)
+  .map(normalizeOrigin);
+
+console.log('[config] Allowed CORS origins:', ALLOWED_ORIGINS.join(', '));
+
+const corsOptions = {
+  origin(origin, callback) {
+    // No origin header = same-origin request, curl, server-to-server, etc. - allow it.
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error(`Origin "${origin}" is not in the CLIENT_URL allowlist.`));
+  },
+  credentials: true,
+};
 
 async function startServer() {
   await connectDB();
@@ -28,16 +64,6 @@ async function startServer() {
 
   // --- Security & core middleware ---
   app.use(helmet());
-  // Allow multiple origins via comma-separated CLIENT_URL env var.
-  const corsOptions = {
-    origin: (origin, callback) => {
-      // Allow server-to-server requests or tools like curl (no origin)
-      if (!origin) return callback(null, true);
-      if (CLIENT_URLS.includes(origin) || CLIENT_URLS.includes('*')) return callback(null, true);
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-  };
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(mongoSanitize()); // MongoDB operator injection protection
@@ -58,7 +84,7 @@ async function startServer() {
   app.use('/api/upload', uploadRoutes);
 
   // --- Socket.io (init before Apollo so resolvers can broadcast via getIO()) ---
-  const io = initSocket(httpServer, SOCKET_ORIGIN);
+  const io = initSocket(httpServer, ALLOWED_ORIGINS);
 
   // --- Apollo Server (GraphQL) ---
   const apolloServer = new ApolloServer({ schema });

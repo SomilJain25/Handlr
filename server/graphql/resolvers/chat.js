@@ -3,6 +3,7 @@ const Message = require('../../models/Message');
 const User = require('../../models/User');
 const { requireAuth } = require('../../middleware/auth');
 const { getIO } = require('../../socket');
+const { createNotification } = require('../../services/notificationService');
 
 module.exports = {
   Query: {
@@ -102,14 +103,27 @@ module.exports = {
         });
       }
 
+      const otherParticipantId = conversation.participants
+        .map((p) => p.toString())
+        .find((p) => p !== user.id);
+      if (otherParticipantId) {
+        createNotification({
+          recipient: otherParticipantId,
+          type: 'new_message',
+          title: 'New message',
+          message: content.length > 80 ? `${content.slice(0, 80)}…` : content,
+          link: `/messages/${conversationId}`,
+        }).catch((err) => console.error('Notification failed:', err.message));
+      }
+
       return message;
     },
   },
 
   Conversation: {
     id: (c) => c._id.toString(),
-    participants: (c) => User.find({ _id: { $in: c.participants } }),
-    job: (c) => (c.job ? require('../../models/Job').findById(c.job) : null),
+    participants: (c) => User.find({ _id: { $in: c.participants } }).exec(),
+    job: (c) => (c.job ? require('../../models/Job').findById(c.job).exec() : null),
     createdAt: (c) => c.createdAt.toISOString(),
     lastMessageAt: (c) => (c.lastMessageAt ? c.lastMessageAt.toISOString() : null),
     unreadCount: async (c, _, context) => {
@@ -125,7 +139,7 @@ module.exports = {
   Message: {
     id: (m) => m._id.toString(),
     conversationId: (m) => m.conversation.toString(),
-    sender: (m) => User.findById(m.sender),
+    sender: (m) => User.findById(m.sender).exec(),
     createdAt: (m) => m.createdAt.toISOString(),
   },
 };

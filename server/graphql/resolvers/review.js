@@ -98,9 +98,9 @@ module.exports = {
 
   Review: {
     id: (r) => r._id.toString(),
-    job: (r) => Job.findById(r.job),
-    reviewer: (r) => User.findById(r.reviewer),
-    reviewee: (r) => User.findById(r.reviewee),
+    job: (r) => Job.findById(r.job).exec(),
+    reviewer: (r) => User.findById(r.reviewer).exec(),
+    reviewee: (r) => User.findById(r.reviewee).exec(),
     createdAt: (r) => r.createdAt.toISOString(),
   },
 

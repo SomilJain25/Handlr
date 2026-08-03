@@ -182,8 +182,8 @@ module.exports = {
 
   Proposal: {
     id: (p) => p._id.toString(),
-    job: (p) => (p.job._id ? p.job : Job.findById(p.job)), // avoid a double-fetch if already populated
-    freelancer: (p) => require('../../models/User').findById(p.freelancer),
+    job: (p) => (p.job._id ? p.job : Job.findById(p.job).exec()), // avoid a double-fetch if already populated
+    freelancer: (p) => require('../../models/User').findById(p.freelancer).exec(),
     createdAt: (p) => p.createdAt.toISOString(),
     updatedAt: (p) => p.updatedAt.toISOString(),
   },
