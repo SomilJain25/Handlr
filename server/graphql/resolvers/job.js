@@ -140,8 +140,8 @@ module.exports = {
 
   Job: {
     id: (job) => job._id.toString(),
-    category: (job) => Category.findById(job.category),
-    client: (job) => require('../../models/User').findById(job.client),
+    category: (job) => Category.findById(job.category).exec(),
+    client: (job) => require('../../models/User').findById(job.client).exec(),
     hiredFreelancer: async (job) => {
       const Proposal = require('../../models/Proposal');
       const accepted = await Proposal.findOne({ job: job._id, status: 'accepted' });
