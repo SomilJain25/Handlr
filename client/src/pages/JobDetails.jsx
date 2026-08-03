@@ -35,8 +35,12 @@ export default function JobDetails() {
   });
 
   // Check whether this freelancer already has an active proposal on this job.
-  const { data: myProposalsData } = useQuery(MY_PROPOSALS_QUERY, {
+  // network-only + tracking `loading` matters here: this check gates whether
+  // the Submit button is even clickable, so a stale/incomplete answer can let
+  // someone attempt (and get rejected for) a duplicate submission.
+  const { data: myProposalsData, loading: myProposalsLoading } = useQuery(MY_PROPOSALS_QUERY, {
     skip: user?.role !== 'freelancer',
+    fetchPolicy: 'network-only',
   });
 
   if (loading) return <div className="p-10 text-gray-400">Loading job…</div>;
@@ -202,7 +206,9 @@ export default function JobDetails() {
               Message client
             </button>
             <br />
-            {existingProposal ? (
+            {myProposalsLoading ? (
+              <p className="text-sm text-gray-400">Checking your application status…</p>
+            ) : existingProposal ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 You already applied to this job — status:{' '}
                 <span className="font-medium capitalize">{existingProposal.status}</span>
