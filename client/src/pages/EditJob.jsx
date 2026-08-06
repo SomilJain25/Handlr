@@ -7,7 +7,7 @@ import JobForm from '../components/JobForm';
 export default function EditJob() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data, loading } = useQuery(JOB_QUERY, { variables: { id } });
+  const { data, loading, error } = useQuery(JOB_QUERY, { variables: { id } });
   const [updateJob, { loading: saving }] = useMutation(UPDATE_JOB_MUTATION);
 
   const handleSubmit = async (input) => {
@@ -21,6 +21,7 @@ export default function EditJob() {
   };
 
   if (loading) return <div className="p-10 text-gray-400">Loading job…</div>;
+  if (error) return <div className="p-10 text-red-500">Couldn't load this job: {error.message}</div>;
   if (!data?.job) return <div className="p-10 text-red-500">Job not found.</div>;
 
   const job = data.job;

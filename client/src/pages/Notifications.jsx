@@ -29,7 +29,7 @@ function formatDate(iso) {
 export default function Notifications() {
   const navigate = useNavigate();
   const [unreadOnly, setUnreadOnly] = useState(false);
-  const { data, loading, refetch } = useQuery(NOTIFICATIONS_QUERY, {
+  const { data, loading, error, refetch } = useQuery(NOTIFICATIONS_QUERY, {
     variables: { unreadOnly, limit: 50 },
   });
 
@@ -79,7 +79,10 @@ export default function Notifications() {
       </div>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
-      {!loading && data?.notifications.length === 0 && (
+      {error && (
+        <p className="text-red-500 text-sm">Couldn't load notifications: {error.message}</p>
+      )}
+      {!loading && !error && data?.notifications.length === 0 && (
         <p className="text-gray-400 text-sm">Nothing here yet.</p>
       )}
 

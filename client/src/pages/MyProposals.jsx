@@ -16,7 +16,7 @@ const STATUS_STYLE = {
 
 export default function MyProposals() {
   const [statusFilter, setStatusFilter] = useState('');
-  const { data, loading, refetch } = useQuery(MY_PROPOSALS_QUERY, {
+  const { data, loading, error, refetch } = useQuery(MY_PROPOSALS_QUERY, {
     variables: { status: statusFilter || undefined },
   });
   const [withdrawProposal] = useMutation(WITHDRAW_PROPOSAL_MUTATION);
@@ -52,7 +52,10 @@ export default function MyProposals() {
       </div>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
-      {!loading && data?.myProposals.length === 0 && (
+      {error && (
+        <p className="text-red-500 text-sm">Couldn't load proposals: {error.message}</p>
+      )}
+      {!loading && !error && data?.myProposals.length === 0 && (
         <EmptyState
           icon="📄"
           title="You haven't submitted any proposals yet"

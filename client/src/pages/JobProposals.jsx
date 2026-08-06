@@ -20,7 +20,7 @@ const STATUS_STYLE = {
 export default function JobProposals() {
   const { id: jobId } = useParams();
   const navigate = useNavigate();
-  const { data, loading, refetch } = useQuery(PROPOSALS_FOR_JOB_QUERY, {
+  const { data, loading, error, refetch } = useQuery(PROPOSALS_FOR_JOB_QUERY, {
     variables: { jobId },
   });
 
@@ -58,7 +58,12 @@ export default function JobProposals() {
       <h1 className="text-2xl font-bold mt-2 mb-6">Proposals</h1>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
-      {!loading && data?.proposalsForJob.length === 0 && (
+      {error && (
+        <p className="text-red-500 text-sm">
+          Couldn't load proposals: {error.message}
+        </p>
+      )}
+      {!loading && !error && data?.proposalsForJob.length === 0 && (
         <p className="text-gray-400 text-sm">No proposals yet.</p>
       )}
 

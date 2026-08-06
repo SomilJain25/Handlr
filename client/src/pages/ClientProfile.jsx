@@ -8,7 +8,7 @@ import FormField from '../components/FormField';
 import FileUploadButton from '../components/FileUploadButton';
 
 export default function ClientProfile() {
-  const { data, loading } = useQuery(ME_FULL_QUERY, { fetchPolicy: 'network-only' });
+  const { data, loading, error } = useQuery(ME_FULL_QUERY, { fetchPolicy: 'network-only' });
   const [updateProfile, { loading: saving }] = useMutation(UPDATE_PROFILE_MUTATION);
 
   const {
@@ -59,6 +59,7 @@ export default function ClientProfile() {
   };
 
   if (loading) return <div className="p-10 text-gray-400">Loading profile…</div>;
+  if (error) return <div className="p-10 text-red-500">Couldn't load your profile: {error.message}</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">

@@ -21,7 +21,7 @@ export default function Messages() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: chatsData, refetch: refetchChats } = useQuery(CHATS_QUERY);
+  const { data: chatsData, loading: chatsLoading, error: chatsError, refetch: refetchChats } = useQuery(CHATS_QUERY);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
@@ -30,7 +30,11 @@ export default function Messages() {
         <div className="p-4 border-b border-gray-200 dark:border-gray-800 font-semibold">
           Messages
         </div>
-        {chatsData?.chats.length === 0 && (
+        {chatsLoading && <p className="p-4 text-sm text-gray-400">Loading conversations…</p>}
+        {chatsError && (
+          <p className="p-4 text-sm text-red-500">Couldn't load conversations: {chatsError.message}</p>
+        )}
+        {!chatsLoading && !chatsError && chatsData?.chats.length === 0 && (
           <p className="p-4 text-sm text-gray-400">No conversations yet.</p>
         )}
         {chatsData?.chats.map((c) => {
@@ -85,7 +89,7 @@ export default function Messages() {
 
 function ChatThread({ conversationId, onMessageSent }) {
   const { user } = useAuth();
-  const { data, loading } = useQuery(MESSAGES_QUERY, {
+  const { data, loading, error } = useQuery(MESSAGES_QUERY, {
     variables: { conversationId, limit: 50 },
     fetchPolicy: 'network-only',
   });
@@ -168,6 +172,9 @@ function ChatThread({ conversationId, onMessageSent }) {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {loading && <p className="text-sm text-gray-400">Loading messages…</p>}
+        {error && (
+          <p className="text-sm text-red-500">Couldn't load messages: {error.message}</p>
+        )}
         {messages.map((m) => {
           const isMe = m.sender.id === user.id;
           return (
