@@ -5,9 +5,10 @@ import DashboardCard from '../DashboardCard';
 import MiniBarChart from '../MiniBarChart';
 
 export default function FreelancerDashboardPanel() {
-  const { data, loading } = useQuery(FREELANCER_DASHBOARD_QUERY);
+  const { data, loading, error } = useQuery(FREELANCER_DASHBOARD_QUERY);
 
   if (loading) return <p className="text-gray-400 text-sm">Loading dashboard…</p>;
+  if (error) return <p className="text-red-500 text-sm">Couldn't load your dashboard: {error.message}</p>;
   const d = data?.freelancerDashboard;
   if (!d) return null;
 

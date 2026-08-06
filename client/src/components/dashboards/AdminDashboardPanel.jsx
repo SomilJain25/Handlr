@@ -16,7 +16,7 @@ import DashboardCard from '../DashboardCard';
 import MiniBarChart from '../MiniBarChart';
 
 export default function AdminDashboardPanel() {
-  const { data: statsData, loading: statsLoading } = useQuery(ADMIN_DASHBOARD_QUERY);
+  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(ADMIN_DASHBOARD_QUERY);
   const [tab, setTab] = useState('users');
 
   const d = statsData?.adminDashboard;
@@ -24,6 +24,9 @@ export default function AdminDashboardPanel() {
   return (
     <div>
       {statsLoading && <p className="text-gray-400 text-sm mb-4">Loading stats…</p>}
+      {statsError && (
+        <p className="text-red-500 text-sm mb-4">Couldn't load stats: {statsError.message}</p>
+      )}
       {d && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -66,7 +69,7 @@ export default function AdminDashboardPanel() {
 
 function UsersTab() {
   const [search, setSearch] = useState('');
-  const { data, loading, refetch } = useQuery(ADMIN_USERS_QUERY, {
+  const { data, loading, error, refetch } = useQuery(ADMIN_USERS_QUERY, {
     variables: { search: search || undefined, limit: 50 },
   });
   const [suspendUser] = useMutation(SUSPEND_USER_MUTATION);
@@ -96,6 +99,7 @@ function UsersTab() {
         className="mb-4 w-full max-w-sm rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm"
       />
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
+      {error && <p className="text-red-500 text-sm">Couldn't load users: {error.message}</p>}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -142,7 +146,7 @@ function UsersTab() {
 }
 
 function CategoriesTab() {
-  const { data, loading, refetch } = useQuery(CATEGORIES_ADMIN_QUERY);
+  const { data, loading, error, refetch } = useQuery(CATEGORIES_ADMIN_QUERY);
   const [name, setName] = useState('');
   const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY_MUTATION);
   const [deleteCategory] = useMutation(DELETE_CATEGORY_MUTATION);
@@ -190,6 +194,7 @@ function CategoriesTab() {
       </form>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
+      {error && <p className="text-red-500 text-sm">Couldn't load categories: {error.message}</p>}
       <div className="flex flex-wrap gap-2">
         {data?.categories.map((c) => (
           <span
@@ -212,7 +217,7 @@ function CategoriesTab() {
 }
 
 function ReviewsTab() {
-  const { data, loading, refetch } = useQuery(ADMIN_REVIEWS_QUERY, {
+  const { data, loading, error, refetch } = useQuery(ADMIN_REVIEWS_QUERY, {
     variables: { limit: 50 },
   });
   const [deleteReview] = useMutation(DELETE_REVIEW_MUTATION);
@@ -231,7 +236,8 @@ function ReviewsTab() {
   return (
     <div className="space-y-3">
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
-      {data?.adminReviews.length === 0 && (
+      {error && <p className="text-red-500 text-sm">Couldn't load reviews: {error.message}</p>}
+      {!loading && !error && data?.adminReviews.length === 0 && (
         <p className="text-gray-400 text-sm">No reviews yet.</p>
       )}
       {data?.adminReviews.map((r) => (
